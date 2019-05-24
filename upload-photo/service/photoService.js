@@ -6,7 +6,7 @@ AWS.config.update({
 })
 
 const S3 = new AWS.S3()
-const BUCKET = 'aws-thumbnailer-profile-photos'
+const { BUCKET } = process.env
 
 const upload = body => {
     const id = uuid() + '.jpg'

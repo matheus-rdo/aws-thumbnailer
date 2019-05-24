@@ -30,7 +30,7 @@ provider:
   runtime: nodejs8.10
   role: arn:aws:iam::333090321695:role/lambda-upload-photo
   environment:
-    BUCKET: my-bucket-name
+    BUCKET: aws-thumbnailer-photos
 
 # you can overwrite defaults here
 #  stage: dev
@@ -71,7 +71,13 @@ functions:
     events:
      - http:
          path: profile/photo
-         method: post  
+         method: post
+  thumbnail:
+    handler: thumbnail-photo/handler.thumbnail
+    events:
+     - s3:
+         bucket: ${self:provider.environment.BUCKET}
+         event: s3:ObjectCreated:*
 #      - http:
 #          path: users/create
 #          method: get
