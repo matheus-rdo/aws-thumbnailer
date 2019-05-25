@@ -31,6 +31,7 @@ provider:
   role: arn:aws:iam::333090321695:role/lambda-upload-photo
   environment:
     BUCKET: aws-thumbnailer-photos
+    BUCKET_THUMBNAIL: aws-thumbnailer-photos-thumbnail
 
 # you can overwrite defaults here
 #  stage: dev
@@ -57,7 +58,9 @@ provider:
 #    variable1: value1
 
 # you can add packaging information here
-#package:
+package:
+  individually: true
+  
 #  include:
 #    - include-me.js
 #    - include-me-dir/**
@@ -72,12 +75,22 @@ functions:
      - http:
          path: profile/photo
          method: post
+    package:
+      include:
+        - upload-photo/**
+      exclude:
+        - thumbnail-photo/**
   thumbnail:
     handler: thumbnail-photo/handler.thumbnail
     events:
      - s3:
          bucket: ${self:provider.environment.BUCKET}
          event: s3:ObjectCreated:*
+    package:
+      include:
+        - thumbnail-photo/**
+      exclude:
+        - upload-photo/**
 #      - http:
 #          path: users/create
 #          method: get
@@ -105,12 +118,12 @@ functions:
 #          trigger: PreSignUp
 
 # you can add CloudFormation resource templates here
-#resources:
-#  Resources:
-#    NewResource:
-#      Type: AWS::S3::Bucket
-#      Properties:
-#        BucketName: my-new-bucket
+resources:
+  Resources:
+    Bucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:provider.environment.BUCKET_THUMBNAIL}
 #  Outputs:
 #     NewOutput:
 #       Description: "Description for the output"
