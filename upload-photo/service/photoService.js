@@ -5,27 +5,26 @@ AWS.config.update({
     region: 'us-east-1'
 })
 
-const S3 = new AWS.S3()
+const s3 = new AWS.S3()
 const { BUCKET } = process.env
 
-const upload = body => {
+const upload = async body => {
     const id = uuid() + '.jpg'
-    return new Promise((resolve, reject) => {
-        S3.putObject({
-            Bucket: BUCKET,
-            Key: id,
-            Body: new Buffer(body.replace(/^data:image\/\w+;base64,/, ""), 'base64'),
-            ContentEncoding: 'base64',
-            ContentType: 'image/jpeg'
-        }, (err) => {
-            if (err) return reject(err)
 
-            return resolve({
-                bucket: BUCKET,
-                key: id
-            })
-        })
-    });
+    await s3.putObject({
+        Bucket: BUCKET,
+        Key: id,
+        Body: new Buffer(body.replace(/^data:image\/\w+;base64,/, ""), 'base64'),
+        ContentEncoding: 'base64',
+        ContentType: 'image/jpeg'
+    }).promise()
+
+
+    const response = {
+        bucket: BUCKET,
+        key: id
+    }
+    return response
 }
 
 module.exports = {

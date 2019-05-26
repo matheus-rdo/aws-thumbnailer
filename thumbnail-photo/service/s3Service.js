@@ -17,7 +17,8 @@ const putObject = (bucket, key, buffer) => {
     return s3.putObject({
         Bucket: bucket,
         Key: key,
-        Body: buffer
+        Body: buffer,
+        ContentType: 'image/jpeg'
     }).promise()
 }
 
