@@ -14,6 +14,7 @@
 service: aws-thumbnailer # NOTE: update this with your service name
 plugins:
  - serverless-apigw-binary
+ - serverless-apigwy-binary
  - serverless-offline
 
 
@@ -60,6 +61,11 @@ provider:
 # you can add packaging information here
 package:
   individually: true
+  exclude:
+   - node_modules/**
+   - upload-photo/**
+   - thumbnail-photo/**
+   - download-photo/**
   
 #  include:
 #    - include-me.js
@@ -73,13 +79,11 @@ functions:
     handler: upload-photo/handler.upload
     events:
      - http:
-         path: profile/photo
+         path: photo
          method: post
     package:
       include:
         - upload-photo/**
-      exclude:
-        - thumbnail-photo/**
   thumbnail:
     handler: thumbnail-photo/handler.thumbnail
     events:
@@ -89,8 +93,20 @@ functions:
     package:
       include:
         - thumbnail-photo/**
-      exclude:
-        - upload-photo/**
+  download:
+    handler: download-photo/handler.download
+    events:
+     - http:
+         path: photo/{key}
+         method: get
+         contentHandling: CONVERT_TO_BINARY
+         request:
+            parameters:
+              paths:
+                key: true
+    package:
+      include:
+        - download-photo/**
 #      - http:
 #          path: users/create
 #          method: get
