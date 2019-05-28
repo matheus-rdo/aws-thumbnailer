@@ -14,7 +14,7 @@ module.exports.download = async (event) => {
     headers: {
       'Content-Type': 'image/jpeg'
     },
-    body: data.toString('base64'),
+    body: data.Body.toString('base64'),
     isBase64Encoded: true
   };
 
